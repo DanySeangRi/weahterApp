@@ -1,9 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { CiSearch } from "react-icons/ci";
-
-import { WiHumidity } from "react-icons/wi";
-import { FiWind } from "react-icons/fi";
 import { GoSun } from "react-icons/go";
+import { WiHumidity } from "react-icons/wi";
+import { CiCloudSun } from "react-icons/ci";
+import { CiCloudOn } from "react-icons/ci";
+import { IoCloudyNightSharp } from "react-icons/io5";
+import { MdOutlineNightlightRound } from "react-icons/md";
+import { FaCloud } from "react-icons/fa";
+import { GiSunCloud } from "react-icons/gi";
+import { FaCloudSunRain } from "react-icons/fa";
+import { FaCloudMoonRain } from "react-icons/fa";
+import { FaCloudShowersWater } from "react-icons/fa6";
+import { MdThunderstorm } from "react-icons/md";
+import { FaRegSnowflake } from "react-icons/fa";
+import { FiWind } from "react-icons/fi";
+import { WiFog } from "react-icons/wi";
+import { BsCloudFog2Fill } from "react-icons/bs";
 const Weather = () => {
 
     const getDayName = (timestamp) => {
@@ -13,7 +25,26 @@ const Weather = () => {
 
     const inputRef = useRef(null)
     const [weatherData, setWeatherData] = useState(false);
- 
+    const allIcon = {
+        '01d': <GoSun size={100} className=' my-10 mx-0  w-80 text-yellow-500' />,
+        '01n': <MdOutlineNightlightRound size={100} className='my-10 mx-0  w-80 ' />,
+        '02d': <CiCloudSun size={100} className='my-10 mx-0  w-80 ' />,
+        '02n': <IoCloudyNightSharp size={100} className='my-10 mx-0  w-80 '/>,
+        '03d': <CiCloudOn size={100} className='my-10 mx-0  w-80 ' />,
+        '03n': < FaCloud size={100} className='my-10 mx-0  w-80 ' />,
+        '04d': <GiSunCloud size={100} className='my-10 mx-0  w-80 ' />,
+        '04n': < GiSunCloud size={100} className='my-10 mx-0  w-80 ' />,
+        '10d': < FaCloudSunRain size={100} className='my-10 mx-0  w-80 ' />,
+        '10n': < FaCloudMoonRain size={100} className='my-10 mx-0  w-80 ' />,
+        '09d': < FaCloudShowersWater size={100} className='my-10 mx-0  w-80 ' />,
+        '09n': < FaCloudShowersWater size={100} className='my-10 mx-0  w-80 text-white ' />,
+        '11d': < MdThunderstorm size={100} className='my-10 mx-0  w-80 ' />,
+        '11n': < MdThunderstorm size={100} className='my-10 mx-0  w-80 ' />,
+        '13d': < FaRegSnowflake size={100} className='my-10 mx-0  w-80 ' />,
+        '13n': < FaRegSnowflake size={100} className='my-10 mx-0  w-80 ' />,
+        '50d': < WiFog size={100} className='my-10 mx-0  w-80 ' />,
+        '50n': < BsCloudFog2Fill size={100} className='my-10 mx-0  w-80 ' />
+    }
     const search = async (city) => {
         try {
             const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${import.meta.env.VITE_APP_ID}`;
@@ -24,12 +55,13 @@ const Weather = () => {
             }
             console.log(data);
  
-          
+            const icon = allIcon[data.weather[0].icon] || <GoSun size={50} />;
             setWeatherData({
                 humidity: data.main.humidity,
                 speed: data.wind.speed,
                 temp: Math.floor(data.main.temp),
                 location: data.name,
+                icon: icon,
                day: getDayName(data.dt)
             })
 
@@ -61,7 +93,7 @@ const Weather = () => {
 
             </div>
             <div className='text-center items-center '>
-            <GoSun size={100} className=' my-10 mx-0  w-80 ' />
+                   {weatherData.icon}
                 <p className='text-white text-4xl leading-none'>{weatherData.temp}°c</p>
                 <p className='text-white text-4xl'>{weatherData.location}</p>
             </div>
