@@ -71,9 +71,6 @@ const Weather = () => {
 
         }
     }
-    useEffect(() => {
-        search("cambodia")
-    }, [])
 
     const forecast = async (city) => {
         try {
@@ -83,7 +80,7 @@ const Weather = () => {
 
             console.log(data)
             // allIcon[firstForecast.weather[0].icon] || <GoSun size={50} />;
-           
+
             setForecastData(
                 data.list.map((item) => ({
                     id: item.dt, // unique id from API
@@ -91,7 +88,7 @@ const Weather = () => {
                     temp: Math.floor(item.main.temp),
                     time: item.dt_txt.slice(11, 16),
                     humidity: item.main.humidity,
-                    
+
                 }))
             );
 
@@ -100,8 +97,70 @@ const Weather = () => {
         }
     }
 
+    const searchByCoords = async (lat, lon) => {
+        try {
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${import.meta.env.VITE_APP_ID}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error("location not found");
+            }
+            const icon = allIcon[data.weather[0].icon] || <GoSun size={50} />;
+            setWeatherData({
+                humidity: data.main.humidity,
+                speed: data.wind.speed,
+                temp: Math.floor(data.main.temp),
+                location: data.name,
+                icon: icon,
+                day: getDayName(data.dt),
+                pressure: data.main.pressure
+            });
+        } catch (error) {
+            // fall back to default city if geolocation fails
+            search("cambodia");
+        }
+    };
+
+    const forecastByCoords = async (lat, lon) => {
+        try {
+            const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${import.meta.env.VITE_APP_ID}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error("forecast not found");
+            }
+            setForecastData(
+                data.list.map((item) => ({
+                    id: item.dt,
+                    day: getDayName(item.dt),
+                    temp: Math.floor(item.main.temp),
+                    time: item.dt_txt.slice(11, 16),
+                    humidity: item.main.humidity,
+                }))
+            );
+        } catch (error) {
+            forecast("cambodia");
+        }
+    };
+
     useEffect(() => {
-        forecast('cambodia');
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    searchByCoords(latitude, longitude);
+                    forecastByCoords(latitude, longitude);
+                },
+                () => {
+                    search("cambodia");
+                    forecast("cambodia");
+                }
+            );
+        } else {
+            search("cambodia");
+            forecast("cambodia");
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
