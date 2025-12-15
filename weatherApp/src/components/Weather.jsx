@@ -208,7 +208,7 @@ const Weather = () => {
                 </div>
             </div>
             <div className="w-full  rounded-2xl ">
-                <div className="text-white overflow-x-auto py-4" style={{ maxWidth: '380px' }}>
+                <div className="text-white overflow-x-auto py-4" style={{ maxWidth: '330px' }}>
                     <div className="flex gap-6 min-w-max pb-2 mx-4">
                         {forecastData.map(item => (
                             <div key={item.id} className="shrink-0 w-32 p-4 bg-blue-700/80 rounded-xl text-center">
